@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Login - Pendeteksian Tumor Otak</title>
+  <!-- Favicons -->
+  <link href="{{ url_for('static', filename='img/logo-login.png') }}" rel="icon" />
+  <link href="{{ url_for('static', filename='img/logo-login.png') }}" rel="apple-touch-icon" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet" />
+  <!-- Vendor CSS Files -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/quill/quill.snow.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/quill/quill.bubble.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/remixicon/remixicon.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/simple-datatables/style.css') }}" rel="stylesheet" />
+  <!-- Template Main CSS File -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+</head>
+
+<body>
+  <main>
+    <div class="container">
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+              <div class="d-flex justify-content-center py-4">
+                <a class="logo d-flex align-items-center w-auto">
+                  <img src="{{ url_for('static', filename='img/logo-login.png') }}" alt="" height="50px" />
+                  <span class="d-none d-lg-block">Pendeteksian Tumor Otak</span>
+                </a>
+              </div>
+              <!-- End Logo -->
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Masuk ke Akun kamu sekarang</h5>
+                    <p class="text-center small">Masukkan username & password untuk memproses.</p>
+                  </div>
+                  <form method="POST" action="{{ url_for('auth.login') }}" class="row g-3 needs-validation" novalidate>
+                    <div class="col-12">
+                      <label for="yourUsername" class="form-label">Username</label>
+                      <input type="text" class="form-control" name="username" id="username" required />
+                      <div class="invalid-feedback">Tolong masukkan username!</div>
+                    </div>
+                    <div class="col-12">
+                      <label for="yourPassword" class="form-label">Password</label>
+                      <input type="password" name="password" class="form-control" id="password" required />
+                      <div class="invalid-feedback">Tolong masukkan password!</div>
+                    </div>
+                    <div class="col-12">
+                      <button class="btn btn-primary w-100" type="submit">Masuk</button>
+                    </div>
+                    <!-- QR Login Button inside the card -->
+                    <div class="col-12 mt-4 text-center">
+                      <button class="btn btn-info w-100" type="button" id="qrLoginBtn">Masuk melalui QR</button>
+                    </div>
+                    <!-- Teks untuk pengguna yang belum punya akun -->
+                    <div class="col-12 mt-4 text-center">
+                      <p>Belum punya akun? <a href="{{ url_for('auth.register') }}" class="btn btn-link">Buat Sekarang</a></p>
+                    </div>
+                  </form>
+                  <!-- Container untuk error message -->
+                  <div id="error-message" style="display: none; color: orange;"></div>
+                  {% if error %}
+                  <p>{{ error }}</p>
+                  {% endif %}
+                  {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                  <div class="alert alert-danger" role="alert">
+                    {% for category, message in messages %}
+                    <p>{{ message }}</p>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+                  {% endwith %}
+                </div>
+              </div>
+              <!-- QR Modal -->
+              <div class="modal fade" id="qrLoginModal" tabindex="-1" aria-labelledby="qrLoginModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="qrLoginModalLabel">Pindai Kode QR</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div id="qrCodeContainer">
+                        <img id="qrCodeImage" alt="QR Code" class="img-fluid" />
+                      </div>
+                      <p class="mt-2">Pindai kode QR melalui kamera ponsel dan masukkan kode verifikasi ke sini.</p>
+                      <input type="text" id="verificationCode" class="form-control" placeholder="Enter Verification Code" />
+                      <button class="btn btn-primary mt-2" id="verifyCodeBtn" type="button">Verifikasi</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="credits">
+                Designed by <a href="https://upi-yai.ac.id/">Ikhsan</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <!-- Vendor JS Files -->
+  <script src="{{ url_for('static', filename='vendor/apexcharts/apexcharts.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/chart.js/chart.umd.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/echarts/echarts.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/quill/quill.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/simple-datatables/simple-datatables.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/tinymce/tinymce.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/php-email-form/validate.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>
+    // Event listener untuk tombol "Login via QR"
+    document.getElementById("qrLoginBtn").addEventListener("click", function () {
+      const username = document.getElementById("username").value;
+      if (!username) {
+        document.getElementById("error-message").innerText = "Harap masukkan username terlebih dahulu.";
+        document.getElementById("error-message").style.display = "block";
+        return;
+      }
+      
+      // Sembunyikan pesan error jika ada
+      document.getElementById("error-message").style.display = "none";
+  
+      // Validasi username ke server
+      fetch(`{{ url_for('auth.check_username') }}?username=${encodeURIComponent(username)}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.exists) {
+            // Jika username ada, generate QR Code menggunakan TOTP provisioning URI
+            const qrCodeUrl = `{{ url_for('auth.generate_qr') }}?email=${encodeURIComponent(username)}`;
+            fetch(qrCodeUrl)
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error("QR Code generation failed");
+                }
+                return response.blob();
+              })
+              .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const qrCodeImg = document.getElementById("qrCodeImage");
+                qrCodeImg.src = url;
+                qrCodeImg.style.display = "block";
+              })
+              .catch(error => {
+                console.error("Error:", error);
+                alert("Failed to generate QR Code.");
+              });
+  
+            // Tampilkan modal setelah QR Code berhasil di-fetch
+            const modal = new bootstrap.Modal(document.getElementById('qrLoginModal'));
+            modal.show();
+          } else {
+            alert("Username tidak ditemukan!");
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert(error.message);
+        });
+    });
+  
+    // Event listener untuk tombol "Verify" pada modal QR
+    document.getElementById("verifyCodeBtn").addEventListener("click", function () {
+      const verificationCode = document.getElementById("verificationCode").value;
+      const username = document.getElementById("username").value;
+  
+      if (!verificationCode || !username) {
+        alert("Silakan masukkan kode verifikasi dan pastikan username sudah terisi.");
+        return;
+      }
+  
+      fetch('{{ url_for("auth.verify_qr") }}', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          otp: verificationCode,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === "success") {
+            window.location.href = data.redirect;
+          } else {
+            alert("Login QR Code gagal: " + data.message);
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("Login QR Code gagal: " + error.message);
+        });
+    });
+  </script>
+</body>
+
+</html>

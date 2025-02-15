@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Register - Pendeteksian Tumor Otak</title>
+
+  <!-- Favicons -->
+  <link href="{{ url_for('static', filename='img/logo-login.png')}}" rel="icon">
+  <link href="{{ url_for('static', filename='img/logo-login.png')}}" rel="apple-touch-icon">
+
+  <!-- Vendor CSS Files -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.css')}}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{{ url_for('static', filename='css/style.css')}}" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <main>
+    <div class="container">
+
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+              <div class="d-flex justify-content-center py-4">
+                <a class="logo d-flex align-items-center w-auto">
+                  <img src="{{ url_for('static', filename='img/logo-login.png')}}" alt="" height="50px">
+                  <span class="d-none d-lg-block">Pendeteksian Tumor Otak</span>
+                </a>
+              </div><!-- End Logo -->
+
+              <div class="card mb-3">
+
+                <div class="card-body">
+
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Buat Akun</h5>
+                    <p class="text-center small">Masukkan detil akun untuk membuat akun baru.</p>
+                  </div>
+
+                  <form method="POST" action="{{ url_for('auth.register') }}" class="row g-3 needs-validation" novalidate>
+                    <div class="col-12">
+                      <label for="nama" class="form-label">Nama</label>
+                      <input type="text" class="form-control" name="nama" id="nama" required>
+                      <div class="invalid-feedback">Tolong masukkan nama kamu!</div>
+                    </div>
+
+                    <div class="col-12">
+                      <label for="username" class="form-label">Username</label>
+                      <input type="text" class="form-control" name="username" id="username" required>
+                      <div class="invalid-feedback">Tolong masukkan username!</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                          <input type="password" name="password" class="form-control" id="password" required>
+                          <button type="button" class="btn btn-outline-secondary" id="togglePassword1">
+                            <i class="bi bi-eye-slash" id="eye-icon1"></i>
+                          </button>
+                        </div>
+                        <div class="invalid-feedback">Tolong masukkan password!</div>
+                      </div>
+                      
+                      <div class="col-12">
+                        <label for="confirm_password" class="form-label">Konfirmasi Password</label>
+                        <div class="input-group">
+                          <input type="password" name="confirm_password" class="form-control" id="confirm_password" required>
+                          <button type="button" class="btn btn-outline-secondary" id="togglePassword2">
+                            <i class="bi bi-eye-slash" id="eye-icon2"></i>
+                          </button>
+                        </div>
+                        <div class="invalid-feedback">Tolong konfirmasi password kamu!</div>
+                      </div><br><br>
+
+                    <div class="col-12">
+                      <button class="btn btn-primary w-100" type="submit">Daftar</button>
+                    </div>
+
+                    <!-- Teks untuk pengguna yang sudah punya akun -->
+                    <div class="col-12 mt-3 text-center">
+                      <p>Already have an account? <a href="{{ url_for('auth.login') }}" class="btn btn-link">Masuk</a></p>
+                    </div>
+
+                  </form>
+                  {% if error %}
+                    <p>{{ error }}</p>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="credits">
+                Designed by <a href="https://upi-yai.ac.id/">Ikhsan</a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main><!-- End #main -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+  <!-- Template Main JS File -->
+  <script>
+    // Toggle password visibility for password input
+    const togglePassword1 = document.getElementById('togglePassword1');
+    const passwordField = document.getElementById('password');
+    const eyeIcon1 = document.getElementById('eye-icon1');
+  
+    togglePassword1.addEventListener('click', function () {
+      // Toggle the type attribute for password field
+      const type = passwordField.type === 'password' ? 'text' : 'password';
+      passwordField.type = type;
+  
+      // Toggle the eye icon
+      eyeIcon1.classList.toggle('bi-eye');
+      eyeIcon1.classList.toggle('bi-eye-slash');
+    });
+  
+    // Toggle password visibility for confirm password input
+    const togglePassword2 = document.getElementById('togglePassword2');
+    const confirmPasswordField = document.getElementById('confirm_password');
+    const eyeIcon2 = document.getElementById('eye-icon2');
+  
+    togglePassword2.addEventListener('click', function () {
+      // Toggle the type attribute for confirm password field
+      const type = confirmPasswordField.type === 'password' ? 'text' : 'password';
+      confirmPasswordField.type = type;
+  
+      // Toggle the eye icon
+      eyeIcon2.classList.toggle('bi-eye');
+      eyeIcon2.classList.toggle('bi-eye-slash');
+    });
+  </script>
+
+</body>
+
+</html>

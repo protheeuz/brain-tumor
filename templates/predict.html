@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Smart Prediction</title>
+
+  <link href="{{ url_for('static', filename='img/logo-login.png') }}" rel="icon">
+  <link href="{{ url_for('static', filename='img/logo-login.png') }}" rel="apple-touch-icon">
+
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/remixicon/remixicon.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+  <!-- <style>
+    #predictionResult, #confidenceResult, #tumorType {
+      text-align: center;
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+    #uploadedImage {
+      max-width: 100%;
+      margin-top: 20px;
+      display: none;
+      text-align: center;
+    }
+    .download-btn {
+      display: block;
+      width: 200px;
+      margin: 20px auto;
+      padding: 10px;
+      text-align: center;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .download-btn:hover {
+      background-color: #0056b3;
+    }
+    .output-container {
+      text-align: center;
+      margin-top: 30px;
+    }
+  </style> -->
+  <style>
+        .download-btn {
+      display: block;
+      width: 200px;
+      margin: 20px auto;
+      padding: 10px;
+      text-align: center;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+        .download-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+
+<script>
+  function predictImage() {
+    var formData = new FormData();
+    var fileInput = document.getElementById('imageUpload');
+    formData.append("image", fileInput.files[0]);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/predict", true);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        var data = JSON.parse(xhr.responseText);
+
+        // Update results
+        document.getElementById('predictionResult').innerText = "Hasil Deteksi: " + data.prediction;
+        document.getElementById('tumorType').innerText = "Jenis Tumor: " + data.tumor_type;
+        document.getElementById('confidenceResult').innerText = "Confidence: " + (data.confidence * 100).toFixed(2) + "%";
+        
+        // Display the uploaded image
+        document.getElementById('uploadedImage').src = URL.createObjectURL(fileInput.files[0]);
+        document.getElementById('uploadedImage').style.display = "block";
+        
+        // Enable download button
+        var downloadButton = document.getElementById('downloadButton');
+        downloadButton.href = document.getElementById('uploadedImage').src;
+        downloadButton.style.display = "inline-block";
+      }
+    };
+    xhr.send(formData);
+  }
+</script>
+
+</head>
+
+<body>
+  <header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="{{ url_for('dashboard') }}" class="logo d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/logo-login.png') }}" alt="">
+        <span class="d-none d-lg-block">Deteksi Tumor Otak</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div>
+  </header>
+
+  <aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('dashboard') }}">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('predict') }}">
+          <i class="bi bi-camera"></i><span>Smart Detection</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('logout') }}">
+          <i class="bi bi-box-arrow-left"></i><span>Logout</span>
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <main id="main" class="main">
+    <div class="pagetitle">
+      <h1>Deteksi Pintar</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Home</a></li>
+          <li class="breadcrumb-item active">Pendeteksian</li>
+        </ol>
+      </nav>
+    </div>
+
+    <section class="section dashboard">
+      <div class="col-lg-12">
+        <div class="row">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Upload Gambar untuk Pendeteksian</h5>
+              <form class="row g-3" onsubmit="event.preventDefault(); predictImage();">
+                <div class="col-md-12">
+                  <label for="imageUpload" class="form-label">Pilih Gambar</label>
+                  <input type="file" class="form-control" id="imageUpload" accept="image/*" required>
+                </div>
+                <div class="text-center mt-3">
+                  <button type="submit" class="btn btn-primary">Deteksi</button>
+                </div>
+              </form>
+
+              <!-- Output Results Section -->
+              <div class="output-container">
+                <div class="mt-4" id="predictionResult"></div>
+                <div id="tumorType"></div>
+                <div id="confidenceResult"></div>
+              </div>
+
+              <div class="mt-4">
+                <img id="uploadedImage" style="max-width: 50%; display: none;" />
+              </div>
+
+              <a id="downloadButton" href="#" class="download-btn" style="display:none;" download>Download Gambar Hasil</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>Ikhsan</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+      Designed by <a href="https://upi-yai.ac.id/">Universitas Persada Indonesia YAI</a>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>
